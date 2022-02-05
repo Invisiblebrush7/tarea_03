@@ -23,7 +23,7 @@ class _DonativosState extends State<Donativos> {
             ListTile(
               leading: Image.asset('images/paypal.png'),
               trailing: Text(
-                "0.0",
+                "${widget.donativos["paypal"] ?? 0.0}",
                 style: TextStyle(fontSize: 32.0),
               ),
             ),
@@ -31,7 +31,7 @@ class _DonativosState extends State<Donativos> {
             ListTile(
               leading: Image.asset('images/credit_card.png'),
               trailing: Text(
-                "${widget.donativos["paypal"] ?? 0.0}",
+                "${widget.donativos["tarjeta"] ?? 0.0}",
                 style: TextStyle(fontSize: 32.0),
               ),
             ),
@@ -40,10 +40,16 @@ class _DonativosState extends State<Donativos> {
             ListTile(
               leading: Icon(Icons.attach_money, size: 64.0),
               trailing: Text(
-                "${widget.donativos["paypal"] ?? 0.0}",
+                "${widget.donativos["tarjeta"]! + widget.donativos["paypal"]!}",
                 style: TextStyle(fontSize: 32.0),
               ),
             ),
+            if (widget.donativos["paypal"]! + widget.donativos["tarjeta"]! >=
+                widget.donativos["meta"]!)
+              Padding(
+                padding: const EdgeInsets.only(top: 24.0),
+                child: Image.asset('images/thanks.png'),
+              ),
           ],
         ),
       ),

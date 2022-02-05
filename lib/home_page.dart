@@ -8,15 +8,25 @@ class HomePage extends StatefulWidget {
   final Map<String, double> donativos = {
     "paypal": 0.0,
     "tarjeta": 0.0,
+    "meta": 10000
   };
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
-enum typesOfPayment {paypal, tarjeta}
+enum typesOfPayment { paypal, tarjeta }
 
 class _HomePageState extends State<HomePage> {
+  typesOfPayment? _selected = typesOfPayment.paypal;
+  List<double> progressOptions = [25.0, 50.0, 75.0, 100.0];
+
+  double? selectedProgress = 25.0;
+
+  double getProgress() {
+    double suma = widget.donativos["paypal"]! + widget.donativos["tarjeta"]!;
+    return suma * 100.0 / widget.donativos["meta"]!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,27 +78,74 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       ListTile(
                         leading: Image.asset('images/paypal.png'),
+                        title: Text("Paypal"),
                         trailing: Radio(
                             value: typesOfPayment.paypal,
-                            groupValue: ,
-                            onChanged: (val) {}),
+                            groupValue: _selected,
+                            onChanged: (typesOfPayment? value) {
+                              setState(() {
+                                _selected = value;
+                              });
+                            }),
                       ),
                       ListTile(
                         leading: Image.asset('images/credit_card.png'),
+                        title: Text("Tarjeta"),
                         trailing: Radio(
-                            value: ,
-                            groupValue: ,
-                            onChanged: (val) {}),
+                            value: typesOfPayment.tarjeta,
+                            groupValue: _selected,
+                            onChanged: (typesOfPayment? value) {
+                              setState(() {
+                                _selected = value;
+                              });
+                            }),
                       ),
                     ],
                   ),
                 ),
               ),
-              TextField(),
-              Text("0.0%"),
-              ElevatedButton(
-                child: Text("Donar"),
-                onPressed: () {},
+              Center(
+                child: DropdownButton<double>(
+                  value: selectedProgress,
+                  onChanged: (double? val) {
+                    this.selectedProgress = val;
+                    setState(() {});
+                  },
+                  items: progressOptions.map((double e) {
+                    return DropdownMenuItem(
+                      child: Text("$e"),
+                      value: e,
+                    );
+                  }).toList(),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Progreso: ${getProgress()}%",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w300,
+                      fontSize: 16.0,
+                    )),
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: ElevatedButton(
+                  child: Text("Donar"),
+                  onPressed: () {
+                    double value = (this.selectedProgress! *
+                        widget.donativos["meta"]! /
+                        100);
+                    if (_selected == typesOfPayment.paypal) {
+                      widget.donativos["paypal"] =
+                          widget.donativos["paypal"]! + value;
+                    } else {
+                      widget.donativos["tarjeta"] =
+                          widget.donativos["tarjeta"]! + value;
+                    }
+                    print(widget.donativos);
+                    setState(() {});
+                  },
+                ),
               ),
             ],
           ),
